@@ -1,4 +1,4 @@
-#include "RSA.h"
+#include "RSAkey.h"
 
 using namespace std;
 using namespace NTL;
@@ -16,13 +16,13 @@ int main() {
 	d = conv<ZZ_p>("205119704640110252892051812353");
 
 	cout << "Testing RSA public key construction." << endl;
-	RSA_key pubkey = RSA_key(n, e);
+	RSAkey pubkey = RSAkey(n, e);
 	cout << "Pubkey params:\nn = " << pubkey.n << "\ne = " <<
 		pubkey.e << endl;
 	
 	cout << "Testing RSA private key construction given"
 		"p, q and e." << endl;
-	RSA_key privkey = RSA_key(p, q, e);
+	RSAkey privkey = RSAkey(p, q, e);
 	cout << "Privkey params:" << endl;
 	cout << "p = " << privkey.p << endl;
 	cout << "q = " << privkey.q << endl;
@@ -32,7 +32,7 @@ int main() {
 
 	cout << "Testing RSA private key construction given"
 		"n, e and d." << endl;
-	privkey = RSA_key(n, e, d);
+	privkey = RSAkey(n, e, d);
 	cout << "Privkey params:" << endl;
 	cout << "p = " << privkey.p << endl;
 	cout << "q = " << privkey.q << endl;
