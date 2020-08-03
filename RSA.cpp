@@ -24,10 +24,3 @@ void decrypt(NTL::ZZ& m, const NTL::ZZ& c, const RSAkey& key) {
 		throw KeyError();
 	}
 }
-
-/*
-std::string encrypt(std::string pt, RSAkey key) {
-}
-std::string decrypt(std::string ct, RSAkey key) {
-}
-*/
