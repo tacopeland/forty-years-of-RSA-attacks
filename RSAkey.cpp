@@ -1,3 +1,4 @@
+#include <utility>
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZX.h>
@@ -8,35 +9,37 @@ using namespace std;
 using namespace NTL;
 
 
-RSAkey::RSAkey (ZZ modulus, ZZ_p pub_exp) {
+// Create RSA public key from modulus and public exponent
+RSAkey::RSAkey (ZZ modulus, ZZ pub_exp) {
 	n = modulus;
 	e = pub_exp;
 }
 
-// f1, f2 are the factors of the modulus
-RSAkey::RSAkey (ZZ f1, ZZ f2, ZZ_p pub_exp) {
-	p = f1;
-	q = f2;
+// Create RSA private key from modulus' factors and public exponent
+RSAkey::RSAkey (pair<ZZ,ZZ> factors, ZZ pub_exp) {
+	p = factors.first;
+	q = factors.second;
 	n = p * q;
 	e = pub_exp;
 
 	// get phi and set it as modulus for e*d = 1 (mod phi)
 	phi = (p-1) * (q-1);
 	ZZ_pPush push(phi);
-	d = 1/pub_exp;
+	d = conv<ZZ>(1/conv<ZZ_p>(pub_exp));
 }
 
-RSAkey::RSAkey (ZZ modulus, ZZ_p pub_exp, ZZ_p priv_exp) {
+// Create RSA private key from modulus, public exponent and private exponent
+RSAkey::RSAkey (ZZ modulus, ZZ pub_exp, ZZ priv_exp) {
 	n = modulus;
 	e = pub_exp;
 	d = priv_exp;
 
 	// We must calculate phi from d
-	ZZ k = (conv<ZZ>(e) * conv<ZZ>(d) - 1)/n;
-	phi = (conv<ZZ>(e) * conv<ZZ>(d) - 1)/k;
-	while (phi * k != conv<ZZ>(e) * conv<ZZ>(d) - 1) {
+	ZZ k = (e*d - 1)/n;
+	phi = (e*d - 1)/k;
+	while (phi*k != e*d - 1) {
 		++k;
-		phi = (conv<ZZ>(e) * conv<ZZ>(d) - 1)/k;
+		phi = (e*d - 1)/k;
 	}
 
 	// From d and phi we can calculate p and q
@@ -52,4 +55,12 @@ RSAkey::RSAkey (ZZ modulus, ZZ_p pub_exp, ZZ_p priv_exp) {
 	factor(c, factors, pol);
 	p = factors[0].a[0];
 	q = factors[1].a[0];
+}
+
+bool RSAkey::is_private() const {
+	if (!IsZero(phi)) {
+		return true;
+	} else {
+		return false;
+	}
 }

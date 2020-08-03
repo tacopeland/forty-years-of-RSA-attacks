@@ -5,15 +5,13 @@ using namespace NTL;
 
 int main() {
 	// Test key
-	ZZ p, q, n;
-	ZZ_p e, d;
+	ZZ p, q, n, e, d;
 	p = conv<ZZ>("56244518227433");
 	q = conv<ZZ>("22208577958531841");
 	n = conv<ZZ>("1249110767794010895540410194153");
 	// Apply modulus for params in ZZ(n)
-	ZZ_pPush push(n);
-	e = conv<ZZ_p>("65537");
-	d = conv<ZZ_p>("205119704640110252892051812353");
+	e = conv<ZZ>("65537");
+	d = conv<ZZ>("205119704640110252892051812353");
 
 	cout << "Testing RSA public key construction." << endl;
 	RSAkey pubkey = RSAkey(n, e);
@@ -22,7 +20,7 @@ int main() {
 	
 	cout << "Testing RSA private key construction given"
 		"p, q and e." << endl;
-	RSAkey privkey = RSAkey(p, q, e);
+	RSAkey privkey = RSAkey(pair<ZZ, ZZ>{p, q}, e);
 	cout << "Privkey params:" << endl;
 	cout << "p = " << privkey.p << endl;
 	cout << "q = " << privkey.q << endl;
