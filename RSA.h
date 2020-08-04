@@ -2,14 +2,11 @@
 #include <NTL/ZZ.h>
 #include "RSAkey.h"
 
-using namespace std;
-using namespace NTL;
-
 // Encrypt/decrypt RSA integer-encoded messages
-void encrypt(ZZ& c, const ZZ& m, const RSAkey& key);
-void decrypt(ZZ& m, const ZZ& c, const RSAkey& key);
+void encrypt(NTL::ZZ& c, const NTL::ZZ& m, const RSAkey& key);
+void decrypt(NTL::ZZ& m, const NTL::ZZ& c, const RSAkey& key);
 
-class KeyError : public exception {
+class KeyError : public std::exception {
 public:
 	const char * what ();
 };
