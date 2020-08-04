@@ -36,7 +36,6 @@ int main(int argc, char *argv[]) {
 		cerr << "Error: m^e is greater than n!" << endl;
 		return 1;
 	} else {
-		root = mpz_class(r);
-		cout << root << endl;
+		cout << mpz_class(r) << endl;
 	}
 }
