@@ -1,8 +1,14 @@
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
 #include <utility>
+
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZX.h>
 #include <NTL/ZZXFactoring.h>
+
+#include "helper.h"
 #include "RSAkey.h"
 
 using namespace std;
@@ -34,21 +40,16 @@ RSAkey::RSAkey (ZZ modulus, ZZ pub_exp, ZZ priv_exp) {
 	e = pub_exp;
 	d = priv_exp;
 
-	// We must calculate phi from d
-	ZZ k = (e*d - 1)/n;
-	phi = (e*d - 1)/k;
-	while (phi*k != e*d - 1) {
-		++k;
-		phi = (e*d - 1)/k;
-	}
+	// Calculate phi from n, e and d
+	phi = phi_from_params(n, e, d);
 
-	// From d and phi we can calculate p and q
-	// x^2 - ((n - phi) + 1)*x + n == 0 => x=p || x=q
+	// From phi we can calculate p and q
+	// x^2 - ((n-phi) + 1)*x + n == 0 => x=p || x=q
 	ZZX pol;
 	Vec< Pair< ZZX, long > > factors;
 
 	SetCoeff(pol, 2, 1);
-	SetCoeff(pol, 1, (n - phi) + 1);
+	SetCoeff(pol, 1, n - phi + 1);
 	SetCoeff(pol, 0, n);
 
 	ZZ c;
@@ -63,4 +64,34 @@ bool RSAkey::is_private() const {
 	} else {
 		return false;
 	}
+}
+
+ZZ RSAkey::get_param(string param) const {
+	char ch = param[0];
+	if(param == "phi") {
+		// o for order
+		ch = 'o';
+	}
+
+	switch(ch) {
+		case 'p':
+			return p;
+			break;
+		case 'q':
+			return q;
+			break;
+		case 'n':
+			return n;
+			break;
+		case 'e':
+			return e;
+			break;
+		case 'd':
+			return d;
+			break;
+		case 'o':
+			return phi;
+			break;
+	}
+	throw domain_error("Invalid RSA parameter specified!");
 }

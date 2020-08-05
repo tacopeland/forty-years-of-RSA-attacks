@@ -7,6 +7,8 @@
 using namespace std;
 
 void usage(char *progname) {
+	cout << "This program finds m given m^e and e, as long as "
+		"m^e < n." << endl;
 	cout << "Usage: " << progname << " c e" << endl;
 }
 
