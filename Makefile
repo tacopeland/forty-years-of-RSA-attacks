@@ -11,11 +11,11 @@ ATTACKS=integer_root common_modulus
 all: $(ATTACKS)
 .PHONY: all
 
-integer_root: integer_root.o helper.o
+integer_root: integer_root.o
 
 integer_root.o: integer_root.cpp
 
-common_modulus: common_modulus.o RSA.o RSAkey.o helper.o
+common_modulus: common_modulus.o RSA.o RSAkey.o
 
 common_modulus.o: common_modulus.cpp
 
@@ -31,7 +31,7 @@ $(TSTDIR)/RSA_encrypt_decrypt.o: RSA.o RSA.h RSAkey.o RSAkey.h
 
 $(TSTDIR)/RSA_key_construct.o: RSAkey.o RSAkey.h
 
-RSAkey.o: RSAkey.h helper.h
+RSAkey.o: RSAkey.h
 
 
 clean: distclean

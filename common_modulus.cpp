@@ -9,10 +9,10 @@ using namespace std;
 using namespace NTL;
 
 void usage(char *progname) {
-	cout << "This program finds the private exponent of the "
-		"public key <n, e2> given the secret key <n, e1, d1>."
+	cout << "This program returns the private exponent `d` of the "
+		"public key <n, e2> given the secret key <n, e', d'>."
 		<< endl;
-	cout << "Usage: " << progname << " n e1 d1 e2" << endl;
+	cout << "Usage: " << progname << " n e' d' e" << endl;
 }
 
 int main(int argc, char *argv[]) {

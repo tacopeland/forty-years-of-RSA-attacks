@@ -8,7 +8,6 @@
 #include <NTL/ZZX.h>
 #include <NTL/ZZXFactoring.h>
 
-#include "helper.h"
 #include "RSAkey.h"
 
 using namespace std;
@@ -40,22 +39,36 @@ RSAkey::RSAkey (ZZ modulus, ZZ pub_exp, ZZ priv_exp) {
 	e = pub_exp;
 	d = priv_exp;
 
-	// Calculate phi from n, e and d
-	phi = phi_from_params(n, e, d);
 
-	// From phi we can calculate p and q
-	// x^2 - ((n-phi) + 1)*x + n == 0 => x=p || x=q
-	ZZX pol;
-	Vec< Pair< ZZX, long > > factors;
+	// Calculate p and q from d
+	// Based on Pycryptodome's implementation, which is based on Rabin 1979:
+	// https://github.com/Legrandin/pycryptodome/blob/master/lib/Crypto/PublicKey/RSA.py
+	ZZ x, t, p, q, g, cand;
+	x = e * d - 1;
+	g = 2;
 
-	SetCoeff(pol, 2, 1);
-	SetCoeff(pol, 1, n - phi + 1);
-	SetCoeff(pol, 0, n);
+	t = x;
+	while(t % 2 == 0) t/=2;
 
-	ZZ c;
-	factor(c, factors, pol);
-	p = factors[0].a[0];
-	q = factors[1].a[0];
+	bool spotted = false;
+	while(!spotted && g < 100) {
+		ZZ k = t;
+		while(k < x) {
+			PowerMod(cand, g, k, n);
+			if(cand != 1 && cand != (n - 1) && SqrMod(cand, n) == 1) {
+				p = GCD(cand + 1, n);
+				spotted = true;
+				break;
+			}
+			k*=2;
+		}
+		g += 2;
+	}
+	if(!spotted) throw domain_error("Unable to compute p and q from d.");
+
+	q = n / p;
+	// phi = (p-1)*(q-1)
+	mul(phi, p-1, q-1);
 }
 
 bool RSAkey::is_private() const {
