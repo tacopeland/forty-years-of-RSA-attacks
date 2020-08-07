@@ -6,10 +6,14 @@ RM=rm -f
 
 TSTDIR=./tests
 TSTOBJS=$(TSTDIR)/RSA_key_construct.o $(TSTDIR)/RSA_encrypt_decrypt.o
-ATTACKS=integer_root common_modulus
+ATTACKS=integer_root common_modulus blinding
 
 all: $(ATTACKS)
 .PHONY: all
+
+blinding: blinding.o
+
+blinding.o: blinding.cpp
 
 integer_root: integer_root.o
 
