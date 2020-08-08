@@ -5,7 +5,7 @@ Implementation of many attacks on the RSA cryptosystem written in C++, with some
 ### Attacks on RSA encryption, decryption and padding
 - [X] ~~Small public exponent attack for `m < n^(1/e)`.~~ Implemented in `integer_root.cpp`.
 - [ ] Hastad's broadcast attack.
-- [ ] Common modulus attack for external attacker (given two ciphertexts of a message `m` encrypted with one of two public keys `<n, e1>` and `<n, e2>` which have a common modulus, calculate `m`).
+- [X] ~~Common modulus attack for external attacker (given two ciphertexts of a message `m` encrypted with one of two public keys `<n, e1>` and `<n, e2>` which have a common modulus, calculate `m`).~~ Implemented in `common_modulus_external.cpp`.
 - [ ] Coppersmith's attack for stereotyped messages (given that you know all but `a` bits of the ciphertext, find those `a` bits if `a < len(n)/e`).
 - [ ] Decryption oracle attack.
 - [ ] Franklin-Reiter related message attack, along with Coppersmith's extension for short pads.

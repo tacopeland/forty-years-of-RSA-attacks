@@ -6,7 +6,7 @@ RM=rm -f
 
 TSTDIR=./tests
 TSTOBJS=$(TSTDIR)/RSA_key_construct.o $(TSTDIR)/RSA_encrypt_decrypt.o
-ATTACKS=integer_root common_modulus blinding
+ATTACKS=integer_root common_modulus blinding common_modulus_external
 
 all: $(ATTACKS)
 .PHONY: all
@@ -22,6 +22,10 @@ integer_root.o: integer_root.cpp
 common_modulus: common_modulus.o RSA.o RSAkey.o
 
 common_modulus.o: common_modulus.cpp
+
+common_modulus_external: common_modulus_external.o
+
+common_modulus_external.o: common_modulus_external.cpp
 
 test: $(TSTDIR)/test_genkey $(TSTDIR)/test_enc_dec
 
