@@ -6,7 +6,7 @@ RM=rm -f
 
 TSTDIR=./tests
 TSTOBJS=$(TSTDIR)/RSA_key_construct.o $(TSTDIR)/RSA_encrypt_decrypt.o
-ATTACKS=integer_root common_modulus blinding common_modulus_external
+ATTACKS=integer_root common_modulus blinding common_modulus_external fermat_factor
 
 all: $(ATTACKS)
 .PHONY: all
@@ -14,6 +14,10 @@ all: $(ATTACKS)
 blinding: blinding.o
 
 blinding.o: blinding.cpp
+
+fermat_factor: fermat_factor.o
+
+fermat_factor.o: fermat_factor.cpp
 
 integer_root: integer_root.o
 

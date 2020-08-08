@@ -14,11 +14,11 @@ Implementation of many attacks on the RSA cryptosystem written in C++, with some
 
 ### Attacks on the modulus (attacks in which a private key can be derived from a public key)
 - [X] ~~Common modulus attack for internal attacker (given one private key `p1` and one public key `p2`, both of the same modulus, calculate the associated private key for `p2`).~~ Implemented in `common_modulus.cpp`.
-- [ ] Fermat factoring attack for `p - q < n^(1/4)`.
+- [X] ~~Fermat factoring attack for `p - q < n^(1/4)`.~~ Implemented in `fermat_factor.cpp`.
+- [ ] ECM factoring.
 - [ ] Boneh-Durfee attack (if an RSA key has a private exponent `d < n^0.292`, calculate this exponent from the public key).
 - [ ] Coppersmith's attack for factoring with high bits known.
 - [ ] ROCA.
-- [ ] ECM factoring.
 
 ### Attacks for non-standard RSA
 - [ ] Factoring for multi-prime RSA.
