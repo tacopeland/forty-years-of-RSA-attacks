@@ -11,7 +11,6 @@ Implementation of many attacks on the RSA cryptosystem written in C++, with some
 
 ### Attacks on RSA signatures
 - [X] ~~Blinding attack (from the signature `S'` of `m*r^e` calculate the signature `S = S'/r` of `m`.~~ Implemented in `blinding.cpp`.
-- [ ] Fault attacks.
 
 ### Attacks on the modulus (attacks in which a private key can be derived from a public key)
 - [X] ~~Common modulus attack for internal attacker (given one private key `p1` and one public key `p2`, both of the same modulus, calculate the associated private key for `p2`).~~ Implemented in `common_modulus.cpp`.
