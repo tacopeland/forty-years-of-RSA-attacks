@@ -1,10 +1,9 @@
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <NTL/ZZ.h>
-#include <NTL/ZZ_p.h>
 #include <NTL/ZZX.h>
 #include <NTL/ZZXFactoring.h>
 
@@ -21,16 +20,21 @@ RSAkey::RSAkey (ZZ modulus, ZZ pub_exp) {
 }
 
 // Create RSA private key from modulus' factors and public exponent
-RSAkey::RSAkey (pair<ZZ,ZZ> factors, ZZ pub_exp) {
-	p = factors.first;
-	q = factors.second;
-	n = p * q;
+RSAkey::RSAkey (vector<ZZ> factors, ZZ pub_exp) {
+	vector<ZZ>::iterator iter;
+
+	f = factors;
+	n = 1;
+	for(iter = f.begin(); iter != f.end(); iter++)
+		n *= (*iter);
+
 	e = pub_exp;
 
 	// get phi and set it as modulus for e*d = 1 (mod phi)
-	phi = (p-1) * (q-1);
-	ZZ_pPush push(phi);
-	d = conv<ZZ>(1/conv<ZZ_p>(pub_exp));
+	phi = 1;
+	for(iter = f.begin(); iter != f.end(); iter++)
+		phi *= ((*iter) - 1);
+	InvMod(d, pub_exp, phi);
 }
 
 // Create RSA private key from modulus, public exponent and private exponent
@@ -40,35 +44,45 @@ RSAkey::RSAkey (ZZ modulus, ZZ pub_exp, ZZ priv_exp) {
 	d = priv_exp;
 
 
-	// Calculate p and q from d
-	// Based on Pycryptodome's implementation, which is based on Rabin 1979:
+	// Calculate factors from d
+	// Based on a generalization of pycryptodome's implementation:
 	// https://github.com/Legrandin/pycryptodome/blob/master/lib/Crypto/PublicKey/RSA.py
-	ZZ x, t, p, q, g, cand;
+	ZZ x, t, g, cand, fac, r;
+	vector<ZZ>::iterator iter;
 	x = e * d - 1;
 	g = 2;
 
 	t = x;
 	while(t % 2 == 0) t/=2;
 
-	bool spotted = false;
-	while(!spotted && g < 100) {
+	// r: remaining composite factors
+	r = n;
+
+	while(!ProbPrime(r) && g < 100) {
 		ZZ k = t;
 		while(k < x) {
-			PowerMod(cand, g, k, n);
-			if(cand != 1 && cand != (n - 1) && SqrMod(cand, n) == 1) {
-				p = GCD(cand + 1, n);
-				spotted = true;
-				break;
+			PowerMod(cand, g, k, r);
+			if(cand != 1 && cand != (r - 1) && SqrMod(cand, r) == 1) {
+				fac = GCD(cand + 1, r);
+				if(ProbPrime(fac)) {
+					f.push_back(fac);
+					r = r / fac;
+					g = 2;
+					break;
+				}
 			}
 			k*=2;
 		}
 		g += 2;
 	}
-	if(!spotted) throw domain_error("Unable to compute p and q from d.");
+	if(!ProbPrime(r)) throw domain_error("Unable to compute p and q from d.");
 
-	q = n / p;
-	// phi = (p-1)*(q-1)
-	mul(phi, p-1, q-1);
+	f.push_back(r);
+
+	// phi = (f1 - 1)*(f2 - 1)*...*(fk - 1) for all k factors of n
+	phi = 1;
+	for(iter = f.begin(); iter < f.end(); iter++)
+		mul(phi, phi, (*iter) - 1);
 }
 
 bool RSAkey::is_private() const {
@@ -87,12 +101,6 @@ ZZ RSAkey::get_param(string param) const {
 	}
 
 	switch(ch) {
-		case 'p':
-			return p;
-			break;
-		case 'q':
-			return q;
-			break;
 		case 'n':
 			return n;
 			break;
@@ -107,4 +115,9 @@ ZZ RSAkey::get_param(string param) const {
 			break;
 	}
 	throw domain_error("Invalid RSA parameter specified!");
+}
+
+
+vector<ZZ> RSAkey::get_factors() const {
+	return f;
 }
